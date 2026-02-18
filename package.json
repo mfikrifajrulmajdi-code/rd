@@ -1,0 +1,21 @@
+{
+  "name": "remote-desktop-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remote Desktop Application — WebRTC-based monorepo",
+  "scripts": {
+    "dev:server": "pnpm --filter @remote-app/server dev",
+    "dev:desktop": "pnpm --filter @remote-app/desktop dev",
+    "dev:client": "pnpm --filter @remote-app/client dev",
+    "dev:all": "concurrently --kill-others-on-fail --names \"server,desktop,client\" --prefix-colors \"cyan,magenta,green\" \"pnpm dev:server\" \"pnpm dev:desktop\" \"pnpm dev:client\"",
+    "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @remote-app/shared build",
+    "clean": "pnpm -r exec rimraf dist node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

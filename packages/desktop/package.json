@@ -1,0 +1,30 @@
+{
+    "name": "@remote-app/desktop",
+    "version": "1.0.0",
+    "private": true,
+    "main": "./out/main/index.js",
+    "scripts": {
+        "dev": "electron-vite dev",
+        "build": "electron-vite build",
+        "preview": "electron-vite preview",
+        "clean": "rimraf out dist"
+    },
+    "dependencies": {
+        "socket.io-client": "^4.8",
+        "@msgpack/msgpack": "^3.0",
+        "@jitsi/robotjs": "^0.6",
+        "@remote-app/shared": "workspace:*"
+    },
+    "devDependencies": {
+        "electron": "^28.0",
+        "electron-vite": "^2.3",
+        "@vitejs/plugin-react": "^4.3",
+        "react": "^18.3",
+        "react-dom": "^18.3",
+        "@types/react": "^18.3",
+        "@types/react-dom": "^18.3",
+        "@types/node": "^22",
+        "typescript": "^5.4",
+        "rimraf": "^5.0"
+    }
+}

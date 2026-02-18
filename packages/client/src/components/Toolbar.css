@@ -1,0 +1,139 @@
+.toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toolbar--visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toolbar--hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toolbar__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: rgba(15, 52, 96, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toolbar__center {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toolbar__session-code {
+    font-family: 'Inter', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+}
+
+.toolbar__role {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.toolbar__role--admin {
+    color: #ff9f43;
+    background: rgba(255, 159, 67, 0.1);
+}
+
+.toolbar__role--viewer {
+    color: #54a0ff;
+    background: rgba(84, 160, 255, 0.1);
+}
+
+.toolbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toolbar__btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toolbar__btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.toolbar__btn--disconnect {
+    color: var(--accent);
+    border-color: rgba(233, 69, 96, 0.2);
+}
+
+.toolbar__btn--disconnect:hover {
+    background: rgba(233, 69, 96, 0.1);
+}
+
+.toolbar__btn--icon {
+    padding: 0.4rem;
+}
+
+/* Info panel */
+.toolbar__info-panel {
+    background: rgba(15, 52, 96, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.75rem 1rem;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.toolbar__info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    font-size: 0.8rem;
+}
+
+.toolbar__info-row span:first-child {
+    color: var(--text-secondary);
+}
+
+.toolbar__info-row span:last-child {
+    color: var(--text-primary);
+    font-weight: 500;
+}

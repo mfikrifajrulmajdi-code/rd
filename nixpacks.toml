@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = [
+  "npm install -g pnpm",
+  "pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = [
+  "pnpm --filter @remote-app/shared build",
+  "pnpm --filter @remote-app/server build"
+]
+
+[start]
+cmd = "node packages/server/dist/index.js"

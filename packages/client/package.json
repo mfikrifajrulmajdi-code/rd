@@ -1,0 +1,27 @@
+{
+    "name": "@remote-app/client",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "clean": "rimraf dist"
+    },
+    "dependencies": {
+        "socket.io-client": "^4.8",
+        "@msgpack/msgpack": "^3.0",
+        "@remote-app/shared": "workspace:*"
+    },
+    "devDependencies": {
+        "vite": "^5.4",
+        "@vitejs/plugin-react": "^4.3",
+        "react": "^18.3",
+        "react-dom": "^18.3",
+        "@types/react": "^18.3",
+        "@types/react-dom": "^18.3",
+        "typescript": "^5.4",
+        "rimraf": "^5.0"
+    }
+}
