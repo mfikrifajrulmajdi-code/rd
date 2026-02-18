@@ -1,31 +1,30 @@
-FROM node:20-slim
-
-# Enable corepack and install pnpm
-RUN corepack enable && corepack prepare pnpm@9 --activate
+FROM node:20-alpine
 
 WORKDIR /app
+
+# Install pnpm via npm (most reliable in Docker)
+RUN npm install -g pnpm@9
 
 # Copy workspace config files
 COPY package.json pnpm-workspace.yaml ./
 
-# Copy package.json files for all packages (for dependency install)
+# Copy all package.json files for dependency resolution
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/server/package.json ./packages/server/
 
-# Install all dependencies
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source files
+# Copy all source files
 COPY packages/shared/ ./packages/shared/
 COPY packages/server/ ./packages/server/
 
-# Build shared package first, then server
+# Build shared then server
 RUN pnpm --filter @remote-app/shared build
 RUN pnpm --filter @remote-app/server build
 
-# Expose port
+# Set port and start
 ENV PORT=3000
 EXPOSE 3000
 
-# Start server
 CMD ["node", "packages/server/dist/index.js"]
