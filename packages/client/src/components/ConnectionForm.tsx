@@ -3,12 +3,13 @@ import { isValidSessionCode, SESSION_CODE } from '@remote-app/shared';
 import './ConnectionForm.css';
 
 interface ConnectionFormProps {
-    onConnect: (sessionCode: string, role: 'admin' | 'viewer') => void;
+    onConnect: (sessionCode: string, role: 'admin' | 'viewer', pin?: string) => void;
     disabled?: boolean;
 }
 
 export default function ConnectionForm({ onConnect, disabled }: ConnectionFormProps) {
     const [segments, setSegments] = useState(['', '', '']);
+    const [pin, setPin] = useState('');
     const inputRef0 = useRef<HTMLInputElement>(null);
     const inputRef1 = useRef<HTMLInputElement>(null);
     const inputRef2 = useRef<HTMLInputElement>(null);
@@ -63,7 +64,7 @@ export default function ConnectionForm({ onConnect, disabled }: ConnectionFormPr
 
     const handleSubmit = (role: 'admin' | 'viewer') => {
         if (isValid && !disabled) {
-            onConnect(fullCode, role);
+            onConnect(fullCode, role, pin.trim() || undefined);
         }
     };
 
@@ -100,6 +101,20 @@ export default function ConnectionForm({ onConnect, disabled }: ConnectionFormPr
                             />
                         </div>
                     ))}
+                </div>
+
+                <div className="connection-form__pin">
+                    <input
+                        type="password"
+                        inputMode="numeric"
+                        className="connection-form__pin-input"
+                        placeholder="Session PIN (if required)"
+                        value={pin}
+                        onChange={e => setPin(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                        disabled={disabled}
+                        autoComplete="off"
+                        aria-label="Session PIN"
+                    />
                 </div>
 
                 <div className="connection-form__buttons">

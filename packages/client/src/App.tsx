@@ -15,6 +15,10 @@ export default function App() {
     const [role, setRole] = useState<'admin' | 'viewer'>('admin');
     const [errorMessage, setErrorMessage] = useState('');
     const hostIdRef = useRef<string>('');
+    // Stored for auto-reconnect
+    const sessionCodeRef = useRef<string>('');
+    const roleRef = useRef<'admin' | 'viewer'>('admin');
+    const pinRef = useRef<string | undefined>(undefined);
 
     const signaling = useSignaling();
     const webrtc = useWebRTC();
@@ -46,6 +50,34 @@ export default function App() {
                 setAppState('failed');
                 setErrorMessage(data.message || 'An error occurred');
             },
+            onReconnecting: () => {
+                setAppState('reconnecting');
+            },
+            onReconnected: async () => {
+                // Re-join session with same code, role, and PIN
+                try {
+                    const response = await signaling.joinSession(
+                        sessionCodeRef.current,
+                        roleRef.current,
+                        pinRef.current
+                    );
+                    hostIdRef.current = response.hostId;
+                    webrtc.connect(
+                        response.hostId,
+                        roleRef.current,
+                        signaling.sendAnswer,
+                        signaling.sendIceCandidate
+                    );
+                } catch (err) {
+                    console.error('[App] Reconnect re-join failed:', err);
+                    setAppState('failed');
+                    setErrorMessage('Reconnection failed — session may have expired');
+                }
+            },
+            onReconnectFailed: () => {
+                setAppState('failed');
+                setErrorMessage('Connection lost — could not reconnect');
+            },
         });
     }, [signaling, webrtc]);
 
@@ -61,11 +93,15 @@ export default function App() {
         }
     }, [webrtc.connectionState]);
 
-    const handleConnect = useCallback(async (code: string, selectedRole: 'admin' | 'viewer') => {
+    const handleConnect = useCallback(async (code: string, selectedRole: 'admin' | 'viewer', pin?: string) => {
         setSessionCode(code);
         setRole(selectedRole);
         setErrorMessage('');
         setAppState('connecting');
+        // Store for auto-reconnect
+        sessionCodeRef.current = code;
+        roleRef.current = selectedRole;
+        pinRef.current = pin;
 
         try {
             // Connect to signaling server — returns the socket instance
@@ -94,7 +130,7 @@ export default function App() {
             });
 
             // Join the session
-            const response = await signaling.joinSession(code, selectedRole);
+            const response = await signaling.joinSession(code, selectedRole, pin);
             hostIdRef.current = response.hostId;
             setAppState('waiting');
 

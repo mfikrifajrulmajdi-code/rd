@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
     socket.on(SOCKET_EVENTS.REGISTER_HOST, (data: RegisterHostPayload) => {
         console.log(`[Server] register-host from ${socket.id}`, data);
 
-        const session = createSession(socket.id, data.expiresInMs);
+        const session = createSession(socket.id, data.expiresInMs ?? null, data.pin ?? null);
 
         // Register the host peer
         addPeer(socket.id, {
@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
     socket.on(SOCKET_EVENTS.JOIN_SESSION, (data: JoinSessionPayload) => {
         console.log(`[Server] join-session from ${socket.id}`, data);
 
-        const result = joinSession(data.sessionCode, socket.id, data.role);
+        const result = joinSession(data.sessionCode, socket.id, data.role, data.pin ?? null);
 
         // If result is a string, it's an error code
         if (typeof result === 'string') {

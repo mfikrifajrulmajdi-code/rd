@@ -40,13 +40,32 @@ export const DATA_CHANNELS = {
 } as const;
 
 /**
- * Free STUN servers for ICE candidate gathering.
- * TURN servers can be added later for NAT traversal.
+ * ICE servers for WebRTC NAT traversal.
+ * Includes Google STUN servers and Open Relay TURN servers (free, no registration required).
+ * Replace Open Relay credentials with personal Metered.ca credentials for production.
  */
 export const ICE_SERVERS: RTCIceServer[] = [
+    // STUN servers
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
+
+    // Open Relay TURN servers (free fallback for symmetric NAT)
+    {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+    },
+    {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+    },
+    {
+        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+    },
 ];
 
 /**
@@ -105,4 +124,7 @@ export const ERROR_CODES = {
     PEER_NOT_FOUND: 'PEER_NOT_FOUND',
     HOST_ALREADY_EXISTS: 'HOST_ALREADY_EXISTS',
     ADMIN_ALREADY_EXISTS: 'ADMIN_ALREADY_EXISTS',
+    // PIN authentication
+    PIN_REQUIRED: 'PIN_REQUIRED',
+    INVALID_PIN: 'INVALID_PIN',
 } as const;

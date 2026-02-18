@@ -33,6 +33,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     setExpiry: (ms: number | null) => {
         ipcRenderer.send('set-expiry', ms);
     },
+    setPin: (pin: string | null) => {
+        ipcRenderer.send('set-pin', pin);
+    },
 
     // === Screen Capture ===
     getScreenSources: () => ipcRenderer.invoke('get-screen-sources'),

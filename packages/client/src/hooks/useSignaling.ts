@@ -20,6 +20,10 @@ export interface SignalingCallbacks {
     onPeerLeft?: (data: PeerLeftPayload) => void;
     onSessionExpired?: () => void;
     onError?: (data: ErrorPayload) => void;
+    // Auto-reconnect callbacks
+    onReconnecting?: () => void;
+    onReconnected?: () => void;
+    onReconnectFailed?: () => void;
 }
 
 export function useSignaling(serverUrl: string = DEFAULT_SERVER_URL) {
@@ -75,6 +79,23 @@ export function useSignaling(serverUrl: string = DEFAULT_SERVER_URL) {
             callbacksRef.current.onError?.(data);
         });
 
+        // Reconnect event handlers (Socket.IO built-in)
+        socket.on('reconnect', (attemptNumber: number) => {
+            console.log(`[Signaling] Reconnected after ${attemptNumber} attempt(s)`);
+            setIsConnected(true);
+            callbacksRef.current.onReconnected?.();
+        });
+
+        socket.on('reconnect_attempt', (attemptNumber: number) => {
+            console.log(`[Signaling] Reconnect attempt ${attemptNumber}...`);
+            callbacksRef.current.onReconnecting?.();
+        });
+
+        socket.on('reconnect_failed', () => {
+            console.error('[Signaling] Reconnect failed after all attempts');
+            callbacksRef.current.onReconnectFailed?.();
+        });
+
         socketRef.current = socket;
         return socket;
     }, [serverUrl]);
@@ -90,7 +111,7 @@ export function useSignaling(serverUrl: string = DEFAULT_SERVER_URL) {
     }, []);
 
     const joinSession = useCallback(
-        (sessionCode: string, role: 'admin' | 'viewer'): Promise<JoinSessionResponse> => {
+        (sessionCode: string, role: 'admin' | 'viewer', pin?: string): Promise<JoinSessionResponse> => {
             return new Promise((resolve, reject) => {
                 const socket = socketRef.current;
                 if (!socket?.connected) {
@@ -117,7 +138,7 @@ export function useSignaling(serverUrl: string = DEFAULT_SERVER_URL) {
                     reject(new Error(data.message || data.code));
                 });
 
-                const payload: JoinSessionPayload = { sessionCode, role };
+                const payload: JoinSessionPayload = { sessionCode, role, pin: pin ?? null };
                 socket.emit(SOCKET_EVENTS.JOIN_SESSION, payload);
             });
         },

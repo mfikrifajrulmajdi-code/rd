@@ -12,6 +12,9 @@ const sessions = new Map<string, SessionInfo>();
 // Expiry timers keyed by session code
 const expiryTimers = new Map<string, NodeJS.Timeout>();
 
+// Session PINs stored server-side (not exposed to clients)
+const sessionPins = new Map<string, string | null>();
+
 /**
  * Callback invoked when a session expires.
  * Set via setOnSessionExpired() from index.ts.
@@ -25,8 +28,9 @@ export function setOnSessionExpired(cb: (session: SessionInfo) => void): void {
 /**
  * Create a new session for a host.
  * Generates a unique session code and starts an expiry timer if applicable.
+ * @param pin - Optional PIN to protect the session. null = no PIN required.
  */
-export function createSession(hostId: string, expiresInMs: number | null): SessionInfo {
+export function createSession(hostId: string, expiresInMs: number | null, pin?: string | null): SessionInfo {
     // Generate a unique code (retry if collision — effectively impossible)
     let code = generateSessionCode();
     while (sessions.has(code)) {
@@ -44,7 +48,9 @@ export function createSession(hostId: string, expiresInMs: number | null): Sessi
     };
 
     sessions.set(code, session);
-    console.log(`[SessionManager] Session created: ${code} (host: ${hostId}, expires: ${expiresInMs ?? 'never'})`);
+    sessionPins.set(code, pin ?? null);
+    const pinStatus = pin ? 'PIN protected' : 'no PIN';
+    console.log(`[SessionManager] Session created: ${code} (host: ${hostId}, expires: ${expiresInMs ?? 'never'}, ${pinStatus})`);
 
     // Start expiry timer if applicable
     if (expiresInMs != null) {
@@ -66,11 +72,13 @@ export function createSession(hostId: string, expiresInMs: number | null): Sessi
 /**
  * Join an existing session as admin or viewer.
  * Returns the session info on success, or an error code string on failure.
+ * @param pin - PIN provided by the joining peer. Required if session has a PIN.
  */
 export function joinSession(
     code: string,
     peerId: string,
-    role: 'admin' | 'viewer'
+    role: 'admin' | 'viewer',
+    pin?: string | null
 ): SessionInfo | string {
     // Validate code format
     if (!isValidSessionCode(code)) {
@@ -85,6 +93,17 @@ export function joinSession(
     // Check if expired
     if (session.expiresAt !== null && Date.now() > session.expiresAt) {
         return ERROR_CODES.SESSION_EXPIRED;
+    }
+
+    // PIN validation
+    const sessionPin = sessionPins.get(code);
+    if (sessionPin !== null && sessionPin !== undefined) {
+        if (!pin) {
+            return ERROR_CODES.PIN_REQUIRED;
+        }
+        if (pin !== sessionPin) {
+            return ERROR_CODES.INVALID_PIN;
+        }
     }
 
     // Check admin slot
@@ -116,6 +135,7 @@ export function removeSession(code: string): void {
     }
 
     sessions.delete(code);
+    sessionPins.delete(code);
     console.log(`[SessionManager] Session removed: ${code}`);
 }
 

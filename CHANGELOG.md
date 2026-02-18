@@ -9,11 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **TURN Server fallback** — Added 3 Open Relay TURN servers (`openrelay.metered.ca`) to `ICE_SERVERS` in `@remote-app/shared`. Improves connectivity behind symmetric NAT without requiring account registration. Replace with personal Metered.ca credentials for production.
+- **Session PIN authentication** — Optional PIN protection for sessions. Host can set a 4–6 digit PIN via the Electron UI; clients must enter the correct PIN to join. Enforced server-side with new `PIN_REQUIRED` and `INVALID_PIN` error codes.
+- **Auto-reconnect** — Client automatically re-joins the session after a Socket.IO reconnection. Shows "Connection lost — reconnecting..." overlay during reconnect attempts. Re-establishes WebRTC with the same session code, role, and PIN.
+
+### Changed
+- `ICE_SERVERS` in `@remote-app/shared/constants.ts` — expanded from 3 STUN-only to 6 servers (3 STUN + 3 TURN)
+- `ERROR_CODES` in `@remote-app/shared/constants.ts` — added `PIN_REQUIRED` and `INVALID_PIN`
+- `RegisterHostPayload` and `JoinSessionPayload` in `@remote-app/shared/types.ts` — added optional `pin` field
+- `session-manager.ts` — `createSession` and `joinSession` now accept and validate PIN
+- `useSignaling.ts` — `joinSession` hook now accepts optional `pin`; added `onReconnecting`, `onReconnected`, `onReconnectFailed` callbacks
+- `StatusOverlay.tsx` — reconnecting state now shows "Connection lost — reconnecting..." instead of "Reconnecting..."
+- Desktop `App.tsx` — added "Require PIN" toggle and PIN input field in settings card
+
 ### Planned
-- TURN server integration for strict NAT environments
-- Session password / PIN authentication
 - Multi-monitor support for desktop host
-- Reconnection logic on network interruption
 - Clipboard sharing between host and client
 
 ---

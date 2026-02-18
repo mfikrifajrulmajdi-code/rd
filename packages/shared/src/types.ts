@@ -18,6 +18,8 @@ export interface RegisterHostPayload {
     peerId: string;
     /** null = no expiry */
     expiresInMs: number | null;
+    /** Optional PIN to protect the session. null = no PIN required */
+    pin?: string | null;
 }
 
 export interface RegisterHostResponse {
@@ -28,6 +30,8 @@ export interface RegisterHostResponse {
 export interface JoinSessionPayload {
     sessionCode: string;
     role: 'admin' | 'viewer';
+    /** PIN required if the session was created with one */
+    pin?: string | null;
 }
 
 export interface JoinSessionResponse {

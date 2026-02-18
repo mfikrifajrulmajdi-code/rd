@@ -10,7 +10,7 @@ interface StatusOverlayProps {
 const STATE_CONFIG: Record<string, { label: string; showSpinner: boolean }> = {
     connecting: { label: 'Connecting...', showSpinner: true },
     waiting: { label: 'Waiting for host...', showSpinner: true },
-    reconnecting: { label: 'Reconnecting...', showSpinner: true },
+    reconnecting: { label: 'Connection lost — reconnecting...', showSpinner: true },
     failed: { label: 'Connection failed', showSpinner: false },
 };
 

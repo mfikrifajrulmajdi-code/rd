@@ -49,13 +49,17 @@ export function connectToServer(
  *
  * @param socket - Connected Socket instance
  * @param expiresInMs - Session expiry in ms, or null for no expiry
+ * @param pin - Optional PIN to protect the session
  */
 export function registerAsHost(
     socket: TypedSocket,
-    expiresInMs: number | null
+    expiresInMs: number | null,
+    pin?: string | null
 ): void {
     socket.emit(SOCKET_EVENTS.REGISTER_HOST, {
         peerId: socket.id!,
         expiresInMs,
+        pin: pin ?? null,
     });
 }
+

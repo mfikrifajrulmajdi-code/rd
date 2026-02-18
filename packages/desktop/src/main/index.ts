@@ -24,6 +24,7 @@ let mainWindow: BrowserWindow | null = null;
 let socket: TypedSocket | null = null;
 let sessionCode: string | null = null;
 let expiryMs: number | null = SESSION_EXPIRY.DEFAULT_MS;
+let sessionPin: string | null = null;
 const peers = new Map<string, { peerId: string; role: string }>();
 
 // === Window Creation ===
@@ -137,7 +138,7 @@ async function startSignaling(): Promise<void> {
 
     // Register as host once connected
     socket.on('connect', () => {
-        registerAsHost(socket!, expiryMs);
+        registerAsHost(socket!, expiryMs, sessionPin);
         sendConnectionUpdate();
     });
 }
@@ -157,7 +158,7 @@ function setupIPC(): void {
     ipcMain.on('generate-new-code', () => {
         peers.clear();
         if (socket?.connected) {
-            registerAsHost(socket, expiryMs);
+            registerAsHost(socket, expiryMs, sessionPin);
         } else {
             // Socket was disconnected (e.g. after Stop Sharing) — reconnect first
             socket = connectToServer();
@@ -168,10 +169,16 @@ function setupIPC(): void {
                 sendConnectionUpdate();
             });
             socket.on('connect', () => {
-                registerAsHost(socket!, expiryMs);
+                registerAsHost(socket!, expiryMs, sessionPin);
                 sendConnectionUpdate();
             });
         }
+    });
+
+    // Set session PIN (null = no PIN required)
+    ipcMain.on('set-pin', (_event, pin: string | null) => {
+        sessionPin = pin && pin.trim().length > 0 ? pin.trim() : null;
+        console.log(`Session PIN set to: ${sessionPin ? '****' : 'none'}`);
     });
 
     // Stop sharing

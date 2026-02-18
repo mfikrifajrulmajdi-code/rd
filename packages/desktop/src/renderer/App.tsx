@@ -26,6 +26,7 @@ declare global {
             generateNewCode: () => void;
             stopSharing: () => void;
             setExpiry: (ms: number | null) => void;
+            setPin: (pin: string | null) => void;
             getScreenSources: () => Promise<any[]>;
             getSocketId: () => Promise<string | null>;
             onPeerJoined: (cb: (data: any) => void) => void;
@@ -53,6 +54,8 @@ function App() {
         sessionCode: null,
     });
     const [hasExpiry, setHasExpiry] = useState(true);
+    const [requirePin, setRequirePin] = useState(false);
+    const [pinValue, setPinValue] = useState('');
     const [copied, setCopied] = useState(false);
     const [isSharing, setIsSharing] = useState(true);
     const [captureReady, setCaptureReady] = useState(false);
@@ -143,6 +146,21 @@ function App() {
         setHasExpiry(newHasExpiry);
         window.electronAPI.setExpiry(newHasExpiry ? EXPIRY_10_MIN : null);
     }, [hasExpiry]);
+
+    const handleTogglePin = useCallback(() => {
+        const newRequirePin = !requirePin;
+        setRequirePin(newRequirePin);
+        if (!newRequirePin) {
+            setPinValue('');
+            window.electronAPI.setPin(null);
+        }
+    }, [requirePin]);
+
+    const handlePinChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+        setPinValue(val);
+        window.electronAPI.setPin(val.length >= 4 ? val : null);
+    }, []);
 
     const getStatusText = () => {
         if (!isSharing) return 'Sharing dihentikan';
@@ -235,6 +253,36 @@ function App() {
                         <span className="toggle-thumb" />
                     </button>
                 </div>
+                <div className="setting-row">
+                    <div className="setting-info">
+                        <span className="setting-label">Require PIN</span>
+                        <span className="setting-description">
+                            {requirePin ? (pinValue.length >= 4 ? 'PIN aktif' : 'Masukkan 4-6 digit') : 'Tidak ada PIN'}
+                        </span>
+                    </div>
+                    <button
+                        className={`toggle ${requirePin ? 'toggle-on' : 'toggle-off'}`}
+                        onClick={handleTogglePin}
+                        aria-label="Toggle session PIN"
+                    >
+                        <span className="toggle-thumb" />
+                    </button>
+                </div>
+                {requirePin && (
+                    <div className="setting-row">
+                        <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            className="pin-input"
+                            placeholder="4-6 digit PIN"
+                            value={pinValue}
+                            onChange={handlePinChange}
+                            maxLength={6}
+                            aria-label="Session PIN"
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="actions">
