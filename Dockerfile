@@ -6,11 +6,11 @@ WORKDIR /app
 RUN npm install -g pnpm@9
 
 # Copy workspace config files
-COPY package.json pnpm-workspace.yaml ./
+COPY package.json pnpm-workspace.yaml tsconfig.base.json ./
 
 # Copy all package.json files for dependency resolution
-COPY packages/shared/package.json ./packages/shared/
-COPY packages/server/package.json ./packages/server/
+COPY packages/shared/package.json packages/shared/tsconfig.json ./packages/shared/
+COPY packages/server/package.json packages/server/tsconfig.json ./packages/server/
 
 # Install dependencies
 RUN pnpm install --no-frozen-lockfile
