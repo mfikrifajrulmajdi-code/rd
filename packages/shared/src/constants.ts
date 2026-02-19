@@ -50,7 +50,14 @@ export const ICE_SERVERS: RTCIceServer[] = [
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
 
-    // Open Relay TURN servers (free fallback for symmetric NAT)
+    // ExpressTurn (Free Limited)
+    {
+        urls: 'turn:free.expressturn.com:3478',
+        username: '000000002086824708',
+        credential: 'JQ8AM4ozPuCfi1s2Qezpmiz4TEU=',
+    },
+
+    // Open Relay TURN servers (free fallback)
     {
         urls: 'turn:openrelay.metered.ca:80',
         username: 'openrelayproject',
@@ -73,9 +80,9 @@ export const ICE_SERVERS: RTCIceServer[] = [
  * 720p @ 30fps as baseline; adaptive quality may adjust at runtime.
  */
 export const DEFAULT_VIDEO_CONFIG = {
-    width: 1280,
-    height: 720,
-    frameRate: 30,
+    width: 854,
+    height: 480,
+    frameRate: 24,
 } as const;
 
 /**
