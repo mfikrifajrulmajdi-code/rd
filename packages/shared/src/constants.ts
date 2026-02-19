@@ -111,7 +111,7 @@ export const SESSION_EXPIRY = {
 /**
  * Default signaling server URL
  */
-export const DEFAULT_SERVER_URL = 'http://localhost:3000';
+export const DEFAULT_SERVER_URL = 'https://kodokremote.zeabur.app';
 
 /**
  * Error codes
