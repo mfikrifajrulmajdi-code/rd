@@ -10,6 +10,15 @@ A **WebRTC-based remote desktop application** that lets you share your Windows d
 
 ---
 
+## 🌐 Production
+
+| Service | URL |
+|---------|-----|
+| **Web Client** | [rd-client-one.vercel.app](https://rd-client-one.vercel.app) |
+| **Signaling Server** | [kodokremote.zeabur.app](https://kodokremote.zeabur.app) |
+
+---
+
 ## ✨ Features
 
 - 🖥️ **Screen sharing** — Capture and stream your desktop at 720p/30fps via WebRTC
